@@ -6,8 +6,6 @@ import {
   GoldPricesResponse,
 } from "@/types/gold";
 import { useState, useEffect } from "react";
-import { FaGithub } from "react-icons/fa";
-import { IoIosLogOut } from "react-icons/io";
 import Link from "next/link";
 
 export default function Home() {
@@ -140,7 +138,9 @@ export default function Home() {
                 <div>
                   <h2 className="text-2xl font-bold">Gold Prices</h2>
                   {lastUpdateTime && (
-                    <p className="text-sm text-gray-400">Last updated: {lastUpdateTime}</p>
+                    <p className="text-sm text-gray-400">
+                      Last updated: {lastUpdateTime}
+                    </p>
                   )}
                 </div>
                 <button

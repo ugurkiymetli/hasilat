@@ -1,11 +1,14 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
+import { FaGithub } from "react-icons/fa";
+import { IoIosLogOut } from "react-icons/io";
 
 export default function Home() {
   const [password, setPassword] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(
+    Boolean(localStorage.getItem("admin") ?? false)
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -25,6 +28,7 @@ export default function Home() {
 
       if (data.success) {
         setIsAdmin(true);
+        localStorage.setItem("admin", "true");
       } else {
         alert("Incorrect password");
       }
@@ -34,6 +38,11 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const logout = () => {
+    setIsAdmin(false);
+    localStorage.removeItem("admin");
   };
 
   return (
@@ -78,16 +87,18 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Image
-            aria-hidden
-            src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png"
-            alt="File icon"
-            width={16}
-            height={16}
-            style={{ borderRadius: "50%" }}
-          />
+          <FaGithub />
           ugurkiymetli
         </a>
+        {isAdmin ? (
+          <button
+            className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+            onClick={logout}
+          >
+            <IoIosLogOut />
+            logout
+          </button>
+        ) : null}
       </footer>
     </div>
   );

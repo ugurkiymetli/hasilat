@@ -1,5 +1,7 @@
 import React from "react";
 import { GoldPrice } from "@/types/gold";
+import { GOLD_TYPE_NAMES } from ".";
+import { currencyFormatter } from "@/utils/currencyFormatter";
 
 interface GoldPricesTableProps {
   prices: [string, GoldPrice][];
@@ -29,13 +31,13 @@ const GoldPricesTable: React.FC<GoldPricesTableProps> = ({ prices }) => {
           {prices.map(([key, price]) => (
             <tr key={key} className="hover:bg-gray-800">
               <td className="py-2 px-4 border-b border-gray-700">
-                {price.code}
+                {GOLD_TYPE_NAMES[key] || key}
               </td>
               <td className="py-2 px-4 text-right border-b border-gray-700">
-                {price.alis}
+                {currencyFormatter(Number(price.alis))}
               </td>
               <td className="py-2 px-4 text-right border-b border-gray-700">
-                {price.satis}
+                {currencyFormatter(Number(price.satis))}
               </td>
               <td className="py-2 px-4 border-b border-gray-700">
                 {price.tarih}

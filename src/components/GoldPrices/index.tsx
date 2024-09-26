@@ -6,7 +6,7 @@ import useGoldPrices from "@/hooks/useGoldPrices";
 import { useGoldPricesFilter } from "@/hooks/useGoldPricesFilter";
 import { IoIosLogOut } from "react-icons/io";
 
-const GOLD_TYPE_NAMES: { [key: string]: string } = {
+export const GOLD_TYPE_NAMES: { [key: string]: string } = {
   ALTIN: "Gram (24 Ayar)",
   AYAR22: "Gram (22 Ayar)",
   CEYREK_YENI: "Çeyrek (Yeni)",

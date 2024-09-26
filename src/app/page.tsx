@@ -7,6 +7,7 @@ import { useAdmin } from "@/contexts/AdminContext";
 import Footer from "@/components/Layout/Footer";
 import Header from "@/components/Layout/Header";
 import Spinner from "@/components/UI/Spinner";
+import GoldInventory from "@/components/GoldInventory";
 
 export default function Home() {
   const { isAdmin, isLoading, login, logout } = useAdmin();
@@ -18,7 +19,10 @@ export default function Home() {
           {isLoading ? (
             <Spinner />
           ) : isAdmin ? (
-            <GoldPrices onLogout={logout} />
+            <>
+              <GoldPrices onLogout={logout} />
+              <GoldInventory />
+            </>
           ) : (
             <LoginForm onLogin={login} />
           )}

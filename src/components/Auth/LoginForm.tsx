@@ -1,10 +1,12 @@
+import { Login } from "@/types/auth";
 import React, { useState } from "react";
 
 interface LoginFormProps {
-  onLogin: (password: string) => Promise<void>;
+  onLogin: ({ username, password }: Login) => Promise<void>;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
+  const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -12,10 +14,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await onLogin(password);
+      await onLogin({ username, password });
     } catch (error) {
       console.error("Login error:", error);
-      alert("An error occurred. Please try again.");
+      alert(error);
+      setPassword("");
+      //setUsername("");
     } finally {
       setIsLoading(false);
     }
@@ -24,10 +28,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <input
+        type="text"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        placeholder="Enter username"
+        className="px-4 py-2 border rounded bg-gray-800 text-gray-200 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 cursor-not-allowed"
+        disabled
+      />
+      <input
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        placeholder="Enter admin password"
+        placeholder="Enter password"
         className="px-4 py-2 border rounded bg-gray-800 text-gray-200 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
         disabled={isLoading}
       />

@@ -1,9 +1,10 @@
+import { Login } from "@/types/auth";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 type AdminContextValue = {
   isAdmin: boolean | null;
   isLoading: boolean;
-  login: (password: string) => Promise<void>;
+  login: (input: Login) => Promise<void>;
   logout: () => void;
 };
 
@@ -26,12 +27,12 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsLoading(false);
   }, []);
 
-  const login = async (password: string) => {
+  const login = async ({ username, password }: Login) => {
     try {
       const response = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ username: username, password: password }),
       });
 
       if (response.ok) {

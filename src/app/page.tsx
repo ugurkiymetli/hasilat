@@ -1,12 +1,14 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
+import LastUpdateTime from "@/components/GoldPrices/LastUpdateTime";
+import GoldPricesTable from "@/components/GoldPrices/GoldPricesTable";
 import {
   GOLD_TYPE_NAMES,
   GoldPricesData,
   GoldPricesResponse,
 } from "@/types/gold";
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import GoldTypeCheckbox from "@/components/GoldPrices/GoldTypeCheckBox";
 
 export default function Home() {
   const [password, setPassword] = useState("");
@@ -110,10 +112,11 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
+      <header>
+        <h1 className="text-4xl font-bold mb-8 text-center">Hasılat</h1>
+      </header>
       <main className="flex-grow flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          <h1 className="text-4xl font-bold mb-8 text-center">Hasılat</h1>
-
           {!isAdmin ? (
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <input
@@ -137,11 +140,7 @@ export default function Home() {
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h2 className="text-2xl font-bold">Gold Prices</h2>
-                  {lastUpdateTime && (
-                    <p className="text-sm text-gray-400">
-                      Last updated: {lastUpdateTime}
-                    </p>
-                  )}
+                  <LastUpdateTime time={lastUpdateTime} />
                 </div>
                 <button
                   onClick={handleLogout}
@@ -154,57 +153,16 @@ export default function Home() {
                 <>
                   <div className="mb-4 flex flex-wrap gap-4">
                     {Object.keys(goldPrices).map((type) => (
-                      <label key={type} className="inline-flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={selectedTypes.includes(type)}
-                          onChange={() => handleTypeToggle(type)}
-                          className="form-checkbox h-5 w-5 text-blue-600"
-                        />
-                        <span className="ml-2">
-                          {GOLD_TYPE_NAMES[type] || type}
-                        </span>
-                      </label>
+                      <GoldTypeCheckbox
+                        key={type}
+                        type={type}
+                        label={GOLD_TYPE_NAMES[type] || type}
+                        checked={selectedTypes.includes(type)}
+                        onChange={handleTypeToggle}
+                      />
                     ))}
                   </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full bg-gray-900 border-collapse">
-                      <thead>
-                        <tr className="bg-gray-800">
-                          <th className="py-3 px-4 text-left border-b border-gray-700">
-                            Type
-                          </th>
-                          <th className="py-3 px-4 text-right border-b border-gray-700">
-                            Buy
-                          </th>
-                          <th className="py-3 px-4 text-right border-b border-gray-700">
-                            Sell
-                          </th>
-                          <th className="py-3 px-4 text-left border-b border-gray-700">
-                            Date
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredGoldPrices.map(([key, price]) => (
-                          <tr key={key} className="hover:bg-gray-800">
-                            <td className="py-2 px-4 border-b border-gray-700">
-                              {GOLD_TYPE_NAMES[key] || key}
-                            </td>
-                            <td className="py-2 px-4 text-right border-b border-gray-700">
-                              {price.alis}
-                            </td>
-                            <td className="py-2 px-4 text-right border-b border-gray-700">
-                              {price.satis}
-                            </td>
-                            <td className="py-2 px-4 border-b border-gray-700">
-                              {price.tarih}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                  <GoldPricesTable prices={filteredGoldPrices} />
                 </>
               ) : (
                 <p className="text-center">Loading gold prices...</p>
@@ -214,14 +172,14 @@ export default function Home() {
         </div>
       </main>
       <footer className="py-4 text-center bg-gray-900">
-        <Link
-          href="https://github.com/ugurkiymetli/hasilat"
+        <a
+          href="https://github.com/your-github-username/your-repo-name"
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-400 hover:text-blue-300 transition duration-150 ease-in-out"
         >
           View on GitHub
-        </Link>
+        </a>
       </footer>
     </div>
   );

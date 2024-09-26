@@ -1,18 +1,30 @@
-import React, { createContext, useContext } from "react";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-interface AdminContextType {
-  isAdmin: boolean;
+type AdminContextValue = {
+  isAdmin: boolean | null;
+  isLoading: boolean;
   login: (password: string) => Promise<void>;
   logout: () => void;
-}
+};
 
-const AdminContext = createContext<AdminContextType | undefined>(undefined);
+const AdminContext = createContext<AdminContextValue>({
+  isAdmin: null,
+  isLoading: true,
+  login: async () => {},
+  logout: () => {},
+});
 
 export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [isAdmin, setIsAdmin] = useLocalStorage<boolean>("isAdmin", false);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const storedAdminStatus = localStorage.getItem("isAdmin");
+    setIsAdmin(storedAdminStatus === "true");
+    setIsLoading(false);
+  }, []);
 
   const login = async (password: string) => {
     try {
@@ -24,6 +36,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (response.ok) {
         setIsAdmin(true);
+        localStorage.setItem("isAdmin", "true");
       } else {
         throw new Error("Incorrect password");
       }
@@ -35,19 +48,14 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = () => {
     setIsAdmin(false);
+    localStorage.removeItem("isAdmin");
   };
 
   return (
-    <AdminContext.Provider value={{ isAdmin, login, logout }}>
+    <AdminContext.Provider value={{ isAdmin, isLoading, login, logout }}>
       {children}
     </AdminContext.Provider>
   );
 };
 
-export const useAdmin = () => {
-  const context = useContext(AdminContext);
-  if (context === undefined) {
-    throw new Error("useAdmin must be used within an AdminProvider");
-  }
-  return context;
-};
+export const useAdmin = () => useContext(AdminContext);

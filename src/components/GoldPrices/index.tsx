@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import LastUpdateTime from "./LastUpdateTime";
 import GoldTypeCheckbox from "./GoldTypeCheckBox";
 import GoldPricesTable from "./GoldPricesTable";
@@ -30,7 +30,7 @@ const GoldPrices: React.FC<GoldPricesProps> = ({ onLogout }) => {
     useGoldPrices();
   const { selectedTypes, handleTypeToggle } = useGoldPricesFilter();
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchGoldPrices();
   }, [fetchGoldPrices]);
 

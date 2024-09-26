@@ -6,19 +6,21 @@ import GoldPrices from "@/components/GoldPrices";
 import { useAdmin } from "@/contexts/AdminContext";
 import Footer from "@/components/Layout/Footer";
 import Header from "@/components/Layout/Header";
+import Spinner from "@/components/UI/Spinner";
 
 export default function Home() {
-  const { isAdmin, login, logout } = useAdmin();
-
+  const { isAdmin, isLoading, login, logout } = useAdmin();
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
       <Header title="Hasılat" />
       <main className="flex-grow flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          {!isAdmin ? (
-            <LoginForm onLogin={login} />
-          ) : (
+          {isLoading ? (
+            <Spinner />
+          ) : isAdmin ? (
             <GoldPrices onLogout={logout} />
+          ) : (
+            <LoginForm onLogin={login} />
           )}
         </div>
       </main>

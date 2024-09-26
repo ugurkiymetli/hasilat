@@ -21,6 +21,7 @@ export default function Home() {
           ) : isAdmin ? (
             <>
               <GoldPrices onLogout={logout} />
+              <br />
               <GoldInventory />
             </>
           ) : (

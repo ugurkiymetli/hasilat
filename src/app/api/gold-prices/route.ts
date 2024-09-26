@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server";
 
 const ALLOWED_TYPES = [
-  'ALTIN', 
-  'CEYREK_YENI', 'CEYREK_ESKI',
-  'YARIM_YENI', 'YARIM_ESKI',
-  'TEK_YENI', 'TEK_ESKI',
-  'ATA_YENI', 'ATA_ESKI',
-  'AYAR14',
-  'USDTRY', 'EURTRY'
+  "ALTIN",
+  "CEYREK_YENI",
+  "CEYREK_ESKI",
+  "YARIM_YENI",
+  "YARIM_ESKI",
+  "TEK_YENI",
+  "TEK_ESKI",
+  "ATA_YENI",
+  "ATA_ESKI",
+  "AYAR22",
+  "USDTRY",
+  "EURTRY",
 ];
 
 export async function GET() {
@@ -40,7 +45,7 @@ export async function GET() {
     }
 
     const data = await response.json();
-    
+
     // Filter the data to include only the allowed types
     const filteredData = Object.fromEntries(
       Object.entries(data.data).filter(([key]) => ALLOWED_TYPES.includes(key))

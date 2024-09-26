@@ -27,7 +27,8 @@ export interface GoldPricesResponse {
 }
 
 export const GOLD_TYPE_NAMES: { [key: string]: string } = {
-  ALTIN: "Altın",
+  ALTIN: "Gram (24 Ayar)",
+  AYAR22: "Gram (22 Ayar)",
   CEYREK_YENI: "Çeyrek (Yeni)",
   CEYREK_ESKI: "Çeyrek (Eski)",
   YARIM_YENI: "Yarım (Yeni)",
@@ -36,7 +37,6 @@ export const GOLD_TYPE_NAMES: { [key: string]: string } = {
   TEK_ESKI: "Tam (Eski)",
   ATA_YENI: "Ata (Yeni)",
   ATA_ESKI: "Ata (Eski)",
-  AYAR14: "14 Ayar",
   USDTRY: "USD/TRY",
   EURTRY: "EUR/TRY",
 };

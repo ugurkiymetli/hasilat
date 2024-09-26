@@ -6,6 +6,9 @@ import {
   GoldPricesResponse,
 } from "@/types/gold";
 import { useState, useEffect } from "react";
+import { FaGithub } from "react-icons/fa";
+import { IoIosLogOut } from "react-icons/io";
+import Link from "next/link";
 
 export default function Home() {
   const [password, setPassword] = useState("");
@@ -13,15 +16,21 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [goldPrices, setGoldPrices] = useState<GoldPricesData>({});
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [lastUpdateTime, setLastUpdateTime] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check localStorage for admin status when the component mounts
+    // Check localStorage for admin status and selected types when the component mounts
     const storedAdminStatus = localStorage.getItem("isAdmin");
     if (storedAdminStatus === "true") {
       setIsAdmin(true);
       fetchGoldPrices();
     } else {
       setIsAdmin(false);
+    }
+
+    const storedSelectedTypes = localStorage.getItem("selectedTypes");
+    if (storedSelectedTypes) {
+      setSelectedTypes(JSON.parse(storedSelectedTypes));
     }
   }, []);
 
@@ -67,6 +76,7 @@ export default function Home() {
       if (response.ok) {
         const data: GoldPricesResponse = await response.json();
         setGoldPrices(data.data);
+        setLastUpdateTime(data.meta.tarih); // Store the last update time
       } else {
         throw new Error("Failed to fetch gold prices");
       }
@@ -76,9 +86,16 @@ export default function Home() {
   };
 
   const handleTypeToggle = (type: string) => {
-    setSelectedTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-    );
+    setSelectedTypes((prev) => {
+      const newSelectedTypes = prev.includes(type)
+        ? prev.filter((t) => t !== type)
+        : [...prev, type];
+
+      // Save the updated selected types to localStorage
+      localStorage.setItem("selectedTypes", JSON.stringify(newSelectedTypes));
+
+      return newSelectedTypes;
+    });
   };
 
   const filteredGoldPrices = Object.entries(goldPrices).filter(
@@ -94,101 +111,118 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-8">
-      <main className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8">Hasılat</h1>
+    <div className="flex flex-col min-h-screen bg-black text-white">
+      <main className="flex-grow flex items-center justify-center p-8">
+        <div className="w-full max-w-md">
+          <h1 className="text-4xl font-bold mb-8 text-center">Hasılat</h1>
 
-        {!isAdmin ? (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md mx-auto">
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter admin password"
-              className="px-4 py-2 border rounded bg-gray-800 text-gray-200 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
-              disabled={isLoading}
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed transition duration-150 ease-in-out"
-              disabled={isLoading}
-            >
-              {isLoading ? "Verifying..." : "Submit"}
-            </button>
-          </form>
-        ) : (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Gold Prices</h2>
+          {!isAdmin ? (
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter admin password"
+                className="px-4 py-2 border rounded bg-gray-800 text-gray-200 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+                disabled={isLoading}
+              />
               <button
-                onClick={handleLogout}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                type="submit"
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed transition duration-150 ease-in-out"
+                disabled={isLoading}
               >
-                Logout
+                {isLoading ? "Verifying..." : "Submit"}
               </button>
-            </div>
-            {Object.keys(goldPrices).length > 0 ? (
-              <>
-                <div className="mb-4 flex flex-wrap gap-4">
-                  {Object.keys(goldPrices).map((type) => (
-                    <label key={type} className="inline-flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedTypes.includes(type)}
-                        onChange={() => handleTypeToggle(type)}
-                        className="form-checkbox h-5 w-5 text-blue-600"
-                      />
-                      <span className="ml-2">
-                        {GOLD_TYPE_NAMES[type] || type}
-                      </span>
-                    </label>
-                  ))}
+            </form>
+          ) : (
+            <div className="w-full max-w-6xl">
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold">Gold Prices</h2>
+                  {lastUpdateTime && (
+                    <p className="text-sm text-gray-400">Last updated: {lastUpdateTime}</p>
+                  )}
                 </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full bg-gray-900 border-collapse">
-                    <thead>
-                      <tr className="bg-gray-800">
-                        <th className="py-3 px-4 text-left border-b border-gray-700">
-                          Type
-                        </th>
-                        <th className="py-3 px-4 text-right border-b border-gray-700">
-                          Buy
-                        </th>
-                        <th className="py-3 px-4 text-right border-b border-gray-700">
-                          Sell
-                        </th>
-                        <th className="py-3 px-4 text-left border-b border-gray-700">
-                          Date
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredGoldPrices.map(([key, price]) => (
-                        <tr key={key} className="hover:bg-gray-800">
-                          <td className="py-2 px-4 border-b border-gray-700">
-                            {GOLD_TYPE_NAMES[key] || key}
-                          </td>
-                          <td className="py-2 px-4 text-right border-b border-gray-700">
-                            {price.alis}
-                          </td>
-                          <td className="py-2 px-4 text-right border-b border-gray-700">
-                            {price.satis}
-                          </td>
-                          <td className="py-2 px-4 border-b border-gray-700">
-                            {price.tarih}
-                          </td>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Logout
+                </button>
+              </div>
+              {Object.keys(goldPrices).length > 0 ? (
+                <>
+                  <div className="mb-4 flex flex-wrap gap-4">
+                    {Object.keys(goldPrices).map((type) => (
+                      <label key={type} className="inline-flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedTypes.includes(type)}
+                          onChange={() => handleTypeToggle(type)}
+                          className="form-checkbox h-5 w-5 text-blue-600"
+                        />
+                        <span className="ml-2">
+                          {GOLD_TYPE_NAMES[type] || type}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full bg-gray-900 border-collapse">
+                      <thead>
+                        <tr className="bg-gray-800">
+                          <th className="py-3 px-4 text-left border-b border-gray-700">
+                            Type
+                          </th>
+                          <th className="py-3 px-4 text-right border-b border-gray-700">
+                            Buy
+                          </th>
+                          <th className="py-3 px-4 text-right border-b border-gray-700">
+                            Sell
+                          </th>
+                          <th className="py-3 px-4 text-left border-b border-gray-700">
+                            Date
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </>
-            ) : (
-              <p className="text-center">Loading gold prices...</p>
-            )}
-          </div>
-        )}
+                      </thead>
+                      <tbody>
+                        {filteredGoldPrices.map(([key, price]) => (
+                          <tr key={key} className="hover:bg-gray-800">
+                            <td className="py-2 px-4 border-b border-gray-700">
+                              {GOLD_TYPE_NAMES[key] || key}
+                            </td>
+                            <td className="py-2 px-4 text-right border-b border-gray-700">
+                              {price.alis}
+                            </td>
+                            <td className="py-2 px-4 text-right border-b border-gray-700">
+                              {price.satis}
+                            </td>
+                            <td className="py-2 px-4 border-b border-gray-700">
+                              {price.tarih}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              ) : (
+                <p className="text-center">Loading gold prices...</p>
+              )}
+            </div>
+          )}
+        </div>
       </main>
+      <footer className="py-4 text-center bg-gray-900">
+        <Link
+          href="https://github.com/ugurkiymetli/hasilat"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-400 hover:text-blue-300 transition duration-150 ease-in-out"
+        >
+          View on GitHub
+        </Link>
+      </footer>
     </div>
   );
 }

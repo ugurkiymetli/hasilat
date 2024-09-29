@@ -67,6 +67,13 @@ const GoldInventory: React.FC = () => {
                 }
               />
             ))}
+            <InventoryInput
+              key="try"
+              unitPrice={1}
+              assetType="Türk Lirası"
+              onTotalChange={(total) => handleTotalChange("try", total)}
+              increaseStep={100}
+            />
           </div>
         </>
       )}

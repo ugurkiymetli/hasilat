@@ -6,12 +6,14 @@ interface InventoryInputProps {
   unitPrice: number;
   assetType: string;
   onTotalChange: (total: number) => void;
+  increaseStep?: number;
 }
 
 const InventoryInput: React.FC<InventoryInputProps> = ({
   unitPrice,
   assetType,
   onTotalChange,
+  increaseStep = 1,
 }) => {
   const [count, setCount] = useState(() => {
     const savedCounts = localStorage.getItem("assetCounts");
@@ -31,12 +33,12 @@ const InventoryInput: React.FC<InventoryInputProps> = ({
 
   const handleDecrease = () => {
     if (count > 0) {
-      setCount((prev: number) => prev - 1);
+      setCount((prev: number) => prev - increaseStep);
     }
   };
 
   const handleIncrease = () => {
-    setCount((prev: number) => prev + 1);
+    setCount((prev: number) => prev + increaseStep);
   };
 
   return (
